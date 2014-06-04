@@ -11,12 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="0531.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DAD5B7A-1DA7-47B9-870C-E02ACE857BB5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>cGroup0524</RootNamespace>
+    <RootNamespace>FirstShootingGame</RootNamespace>
+    <ProjectName>FirstShootingGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
