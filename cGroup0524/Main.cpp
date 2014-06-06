@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int shot_x[SHOT_NUM];
 	int shot_y[SHOT_NUM];
 	int shotFlag[SHOT_NUM];
-
+	int shotBeforeFlag = 0;
 	for (int i = 0; i < SHOT_NUM; i++)
 	{
 		shotFlag[i] = 0;
@@ -64,19 +64,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			int x = player_x + PLAYER_SIZE / 2;
 			int y = player_y + SHOT_SIZE / 2;
-			
-			for (int i = 0; i < SHOT_NUM; i++)
-			{
-				if (shotFlag[i] == 0)
-				{
-					shot_x[i] = x;
-					shot_y[i] = y;
-					shotFlag[i] = 1;
 
-					break;
+			if (shotBeforeFlag == 0)
+			{
+				for (int i = 0; i < SHOT_NUM; i++)
+				{
+					if (shotFlag[i] == 0)
+					{
+						shot_x[i] = x;
+						shot_y[i] = y;
+						shotFlag[i] = 1;
+						break;
+					}
 				}
+				shotBeforeFlag = 1;
 			}
 		}
+		else
+			shotBeforeFlag = 0;
 
 		for (int i = 0; i < SHOT_NUM; i++)
 		{
