@@ -20,14 +20,13 @@ struct Shot
 {
 	int x;
 	int y;
-	int handle;
+	int flag;
 };
 
 struct Player
 {
 	int x;
 	int y;
-	int handle;
 	Shot shot[SHOT_NUM];
 };
 
@@ -35,7 +34,6 @@ struct Enemy
 {
 	int x;
 	int y;
-	int handle;
 	int direction;
 };
 
@@ -50,34 +48,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	//ƒvƒƒOƒ‰ƒ€‚Åg‚¤•Ï”‚Ì‰Šú‰»=================================
+	int handle_player = LoadGraph("img/Ball.png");
+	int handle_enemy = LoadGraph("img/Sikaku.png");
+	int handle_shot = LoadGraph("img/Shot.png");
+
 	Player player = 
 	{
 		288,
 		500,
-		LoadGraph("img/Ball.png"),
 		0
 	};
+
 	Enemy enemy = 
 	{
 		0,
 		50,
-		LoadGraph("img/Ball.png"),
 		RIGHT
 	};
 
-	player.handle = LoadGraph("img/Ball.png");
-	player.x = 288;
-	player.y = 500;
-
-	int handle_shot = LoadGraph("img/Shot.png");
-	int shot_x[SHOT_NUM];
-	int shot_y[SHOT_NUM];
-	int shotFlag[SHOT_NUM];
 	int shotBeforeFlag = 0;
-	for (int i = 0; i < SHOT_NUM; i++)
-	{
-		shotFlag[i] = 0;
-	}
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -102,11 +91,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				for (int i = 0; i < SHOT_NUM; i++)
 				{
-					if (shotFlag[i] == 0)
+					if (player.shot[i].flag == 0)
 					{
-						shot_x[i] = x;
-						shot_y[i] = y;
-						shotFlag[i] = 1;
+						player.shot[i].x = x;
+						player.shot[i].y = y;
+						player.shot[i].flag = 1;
 						break;
 					}
 				}
@@ -118,8 +107,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		for (int i = 0; i < SHOT_NUM; i++)
 		{
-			if (shotFlag[i])
-				shot_y[i] -= SHOT_SPEED;
+			if (player.shot[i].flag)
+				player.shot[i].y -= SHOT_SPEED;
 		}
 
 		if (enemy.direction == RIGHT)
@@ -151,20 +140,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		for (int i = 0; i < SHOT_NUM; i++)
 		{
-			if (shotFlag[i])
+			if (player.shot[i].flag)
 			{
-				if (shot_y[i] < -10)
-					shotFlag[i] = 0;
+				if (player.shot[i].flag < -10)
+					player.shot[i].flag = 0;
 			}
 		}
 
 		//•`‰æ=================================
-		DrawGraph(player.x, player.y, player.handle, FALSE);
-		DrawGraph(enemy.x, enemy.y, player.handle, FALSE);
+		DrawGraph(player.x, player.y, handle_player, FALSE);
+		DrawGraph(enemy.x, enemy.y, handle_enemy, FALSE);
 		for (int  i = 0; i < SHOT_NUM; i++)
 		{
-			if (shotFlag[i])
-				DrawGraph(shot_x[i], shot_y[i], handle_shot, FALSE);
+			if (player.shot[i].flag)
+				DrawGraph(player.shot[i].x, player.shot[i].y, handle_shot, FALSE);
 		}
 
 		ScreenFlip();
