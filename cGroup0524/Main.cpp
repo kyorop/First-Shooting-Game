@@ -16,6 +16,29 @@ enum Direction
 	LEFT,
 };
 
+struct Shot
+{
+	int x;
+	int y;
+	int handle;
+};
+
+struct Player
+{
+	int x;
+	int y;
+	int handle;
+	Shot shot[SHOT_NUM];
+};
+
+struct Enemy
+{
+	int x;
+	int y;
+	int handle;
+	int direction;
+};
+
 // WinMain関数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -27,14 +50,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	//プログラムで使う変数の初期化=================================
-	int handle_player = LoadGraph("img/Ball.png");
-	int player_x = 288;
-	int player_y = 0;
+	Player player = 
+	{
+		288,
+		500,
+		LoadGraph("img/Ball.png"),
+		0
+	};
+	Enemy enemy = 
+	{
+		0,
+		50,
+		LoadGraph("img/Ball.png"),
+		RIGHT
+	};
 
-	int handle_enemy = LoadGraph("img/Sikaku.png");
-	int enemy_x = 0;
-	int enemy_y = 50;
-	int enemy_muki = RIGHT;
+	player.handle = LoadGraph("img/Ball.png");
+	player.x = 288;
+	player.y = 500;
 
 	int handle_shot = LoadGraph("img/Shot.png");
 	int shot_x[SHOT_NUM];
@@ -52,18 +85,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		//更新=================================
 		if (CheckHitKey(KEY_INPUT_UP)) 
-			player_y -= PLAYER_SPEED;
+			player.y -= PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_DOWN)) 
-			player_y += PLAYER_SPEED;
+			player.y += PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_LEFT)) 
-			player_x -= PLAYER_SPEED;
+			player.x -= PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_RIGHT)) 
-			player_x += PLAYER_SPEED;
+			player.x += PLAYER_SPEED;
 
 		if (CheckHitKey(KEY_INPUT_Z))
 		{
-			int x = player_x + PLAYER_SIZE / 2;
-			int y = player_y + SHOT_SIZE / 2;
+			int x = player.x + PLAYER_SIZE / 2;
+			int y = player.y + SHOT_SIZE / 2;
 
 			if (shotBeforeFlag == 0)
 			{
@@ -89,32 +122,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				shot_y[i] -= SHOT_SPEED;
 		}
 
-		if (enemy_muki == RIGHT)
-			enemy_x += ENEMY_SPEED;
-		else if (enemy_muki == LEFT)
-			enemy_x -= ENEMY_SPEED;
+		if (enemy.direction == RIGHT)
+			enemy.x += ENEMY_SPEED;
+		else if (enemy.direction == LEFT)
+			enemy.x -= ENEMY_SPEED;
 
 		//あたり判定=================================
-		if (enemy_x > 576)
+		if (enemy.x > 576)
 		{
-			enemy_x = 576;
-			enemy_muki = LEFT;
+			enemy.x = 576;
+			enemy.direction = LEFT;
 		}
 		
-		if (enemy_x < 0)
+		if (enemy.x < 0)
 		{
-			enemy_x = 0;
-			enemy_muki = RIGHT;
+			enemy.x = 0;
+			enemy.direction = RIGHT;
 		}
 
-		if (player_x < 0) 
-			player_x = 0;
-		if (player_x > 640 - 64)
-			player_x = 640 - 64;
-		if (player_y < 0) 
-			player_y = 0;
-		if (player_y > 480 - 64) 
-			player_y = 480 - 64;
+		if (player.x < 0) 
+			player.x = 0;
+		if (player.x > 640 - 64)
+			player.x = 640 - 64;
+		if (player.y < 0) 
+			player.y = 0;
+		if (player.y > 480 - 64) 
+			player.y = 480 - 64;
 
 		for (int i = 0; i < SHOT_NUM; i++)
 		{
@@ -126,8 +159,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		//描画=================================
-		DrawGraph(player_x, player_y, handle_player, FALSE);
-		DrawGraph(enemy_x, enemy_y, handle_enemy, FALSE);
+		DrawGraph(player.x, player.y, player.handle, FALSE);
+		DrawGraph(enemy.x, enemy.y, player.handle, FALSE);
 		for (int  i = 0; i < SHOT_NUM; i++)
 		{
 			if (shotFlag[i])
