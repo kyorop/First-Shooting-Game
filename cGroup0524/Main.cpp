@@ -25,30 +25,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(640, 480, 16);
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	//ÉQÅ[ÉÄÇ≈égÇ§ïœêîÇÃèâä˙âª=================================
 	int handle_player = LoadGraph("img/Ball.png");
-	int player_x;
-	int player_y;
+	int player_x = 288;
+	int player_y = 0;
 
 	int handle_enemy = LoadGraph("img/Sikaku.png");
-	int enemy_x;
-	int enemy_y;
-	int enemy_muki;
+	int enemy_x = 0;
+	int enemy_y = 50;
+	int enemy_muki = RIGHT;
 
 	int handle_shot = LoadGraph("img/Shot.png");
-	int shot_x;
-	int shot_y;
-	int shotFlag;
+	int shot_x = 0;
+	int shot_y = 0;
+	int shotFlag = 0;
 
-	player_x = 288;
-	player_y = 0;
-
-	enemy_x = 0;
-	enemy_y = 50;
-	enemy_muki = RIGHT;
-
-	shot_x = 0;
-	shot_y = 0;
-	shotFlag = 0;
+	int shot2_x = 0;
+	int shot2_y = 0;
+	int shot2Flag = 0;
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -64,15 +58,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (CheckHitKey(KEY_INPUT_RIGHT)) 
 			player_x += PLAYER_SPEED;
 
-		if (CheckHitKey(KEY_INPUT_Z) && shotFlag == 0)
+		if (CheckHitKey(KEY_INPUT_Z))
 		{
-			shot_x = player_x + PLAYER_SIZE / 2;
-			shot_y = player_y + SHOT_SIZE / 2;
+			int x = player_x + PLAYER_SIZE / 2;
+			int y = player_y + SHOT_SIZE / 2;
 
-			shotFlag = 1;
+			if ( ! shotFlag)
+			{
+				shot_x = x;
+				shot_y = y;
+				shotFlag = 1;
+			}
+			else if ( ! shot2Flag)
+			{
+				shot2_x = x;
+				shot2_y = y;
+				shot2Flag = 1;
+			}
 		}
+
 		if (shotFlag)
 			shot_y -= SHOT_SPEED;
+		if (shot2Flag)
+			shot2_y -= SHOT_SPEED;
 
 		if (enemy_muki == RIGHT)
 			enemy_x += ENEMY_SPEED;
@@ -103,12 +111,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		if (shotFlag && shot_y < -10)
 			shotFlag = 0;
+		if (shot2Flag && shot2_y < -10)
+			shot2Flag = 0;
 
 		//ï`âÊ=================================
 		DrawGraph(player_x, player_y, handle_player, FALSE);
 		DrawGraph(enemy_x, enemy_y, handle_enemy, FALSE);
 		if (shotFlag)
 			DrawGraph(shot_x, shot_y, handle_shot, FALSE);
+		if (shot2Flag)
+			DrawGraph(shot2_x, shot2_y, handle_shot, FALSE);
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
