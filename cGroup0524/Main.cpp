@@ -8,6 +8,7 @@
 #define ENEMY_SIZE 64
 #define SHOT_SIZE 16
 
+#define SHOT_NUM 100
 
 enum Direction
 {
@@ -25,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(640, 480, 16);
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	//ゲームで使う変数の初期化=================================
+	//プログラムで使う変数の初期化=================================
 	int handle_player = LoadGraph("img/Ball.png");
 	int player_x = 288;
 	int player_y = 0;
@@ -36,13 +37,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int enemy_muki = RIGHT;
 
 	int handle_shot = LoadGraph("img/Shot.png");
-	int shot_x = 0;
-	int shot_y = 0;
-	int shotFlag = 0;
+	int shot_x[SHOT_NUM];
+	int shot_y[SHOT_NUM];
+	int shotFlag[SHOT_NUM];
 
-	int shot2_x = 0;
-	int shot2_y = 0;
-	int shot2Flag = 0;
+	for (int i = 0; i < SHOT_NUM; i++)
+	{
+		shotFlag[i] = 0;
+	}
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -62,25 +64,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			int x = player_x + PLAYER_SIZE / 2;
 			int y = player_y + SHOT_SIZE / 2;
+			
+			for (int i = 0; i < SHOT_NUM; i++)
+			{
+				if (shotFlag[i] == 0)
+				{
+					shot_x[i] = x;
+					shot_y[i] = y;
+					shotFlag[i] = 1;
 
-			if ( ! shotFlag)
-			{
-				shot_x = x;
-				shot_y = y;
-				shotFlag = 1;
-			}
-			else if ( ! shot2Flag)
-			{
-				shot2_x = x;
-				shot2_y = y;
-				shot2Flag = 1;
+					break;
+				}
 			}
 		}
 
-		if (shotFlag)
-			shot_y -= SHOT_SPEED;
-		if (shot2Flag)
-			shot2_y -= SHOT_SPEED;
+		for (int i = 0; i < SHOT_NUM; i++)
+		{
+			if (shotFlag[i])
+				shot_y[i] -= SHOT_SPEED;
+		}
 
 		if (enemy_muki == RIGHT)
 			enemy_x += ENEMY_SPEED;
@@ -109,18 +111,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (player_y > 480 - 64) 
 			player_y = 480 - 64;
 
-		if (shotFlag && shot_y < -10)
-			shotFlag = 0;
-		if (shot2Flag && shot2_y < -10)
-			shot2Flag = 0;
+		for (int i = 0; i < SHOT_NUM; i++)
+		{
+			if (shotFlag[i])
+			{
+				if (shot_y[i] < -10)
+					shotFlag[i] = 0;
+			}
+		}
 
 		//描画=================================
 		DrawGraph(player_x, player_y, handle_player, FALSE);
 		DrawGraph(enemy_x, enemy_y, handle_enemy, FALSE);
-		if (shotFlag)
-			DrawGraph(shot_x, shot_y, handle_shot, FALSE);
-		if (shot2Flag)
-			DrawGraph(shot2_x, shot2_y, handle_shot, FALSE);
+		for (int  i = 0; i < SHOT_NUM; i++)
+		{
+			if (shotFlag[i])
+				DrawGraph(shot_x[i], shot_y[i], handle_shot, FALSE);
+		}
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
