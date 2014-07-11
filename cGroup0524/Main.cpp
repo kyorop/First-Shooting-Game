@@ -8,12 +8,35 @@
 #define ENEMY_SIZE 64
 #define SHOT_SIZE 16
 
-
 enum Direction
 {
 	RIGHT,
 	LEFT,
 };
+
+struct Player
+{
+	int x;
+	int y;
+	int handle;
+};
+
+struct Enemy
+{
+	int x;
+	int y;
+	int handle;
+	int muki;
+};
+
+struct Shot
+{
+	int x;
+	int y;
+	int flag;
+	int handle;
+};
+
 
 // WinMainŠÖ”
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -25,30 +48,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(640, 480, 16);
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	int handle_player = LoadGraph("img/Ball.png");
-	int player_x;
-	int player_y;
+	Player player;
+	player.handle = LoadGraph("img/Ball.png");
 
-	int handle_enemy = LoadGraph("img/Sikaku.png");
-	int enemy_x;
-	int enemy_y;
-	int enemy_muki;
+	Enemy enemy;
+	enemy.handle = LoadGraph("img/Sikaku.png");
+	Enemy enemy2;
 
-	int handle_shot = LoadGraph("img/Shot.png");
-	int shot_x;
-	int shot_y;
-	int shotFlag;
+	Enemy enemise[10];
 
-	player_x = 288;
-	player_y = 0;
+	enemise[0].x;
+	enemise[1].x;
 
-	enemy_x = 0;
-	enemy_y = 50;
-	enemy_muki = RIGHT;
 
-	shot_x = 0;
-	shot_y = 0;
-	shotFlag = 0;
+	Shot shot;
+	shot.handle = LoadGraph("img/Shot.png");
+
+	player.x = 288;
+	player.y = 0;
+
+	enemy.x = 0;
+	enemy.y = 50;
+	enemy.muki = RIGHT;
+
+	shot.x = 0;
+	shot.y = 0;
+	shot.flag = 0;
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -56,59 +81,59 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		//XV=================================
 		if (CheckHitKey(KEY_INPUT_UP)) 
-			player_y -= PLAYER_SPEED;
+			player.y -= PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_DOWN)) 
-			player_y += PLAYER_SPEED;
+			player.y += PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_LEFT)) 
-			player_x -= PLAYER_SPEED;
+			player.x -= PLAYER_SPEED;
 		if (CheckHitKey(KEY_INPUT_RIGHT)) 
-			player_x += PLAYER_SPEED;
+			player.x += PLAYER_SPEED;
 
-		if (CheckHitKey(KEY_INPUT_Z) && shotFlag == 0)
+		if (CheckHitKey(KEY_INPUT_Z) && shot.flag == 0)
 		{
-			shot_x = player_x + PLAYER_SIZE / 2;
-			shot_y = player_y + SHOT_SIZE / 2;
+			shot.x = player.x + PLAYER_SIZE / 2;
+			shot.y = player.y + SHOT_SIZE / 2;
 
-			shotFlag = 1;
+			shot.flag = 1;
 		}
-		if (shotFlag)
-			shot_y -= SHOT_SPEED;
+		if (shot.flag)
+			shot.y -= SHOT_SPEED;
 
-		if (enemy_muki == RIGHT)
-			enemy_x += ENEMY_SPEED;
-		else if (enemy_muki == LEFT)
-			enemy_x -= ENEMY_SPEED;
+		if (enemy.muki == RIGHT)
+			enemy.x += ENEMY_SPEED;
+		else if (enemy.muki == LEFT)
+			enemy.x -= ENEMY_SPEED;
 
 		//‚ ‚½‚è”»’è=================================
-		if (enemy_x > 576)
+		if (enemy.x > 576)
 		{
-			enemy_x = 576;
-			enemy_muki = LEFT;
+			enemy.x = 576;
+			enemy.muki = LEFT;
 		}
 		
-		if (enemy_x < 0)
+		if (enemy.x < 0)
 		{
-			enemy_x = 0;
-			enemy_muki = RIGHT;
+			enemy.x = 0;
+			enemy.muki = RIGHT;
 		}
 
-		if (player_x < 0) 
-			player_x = 0;
-		if (player_x > 640 - 64)
-			player_x = 640 - 64;
-		if (player_y < 0) 
-			player_y = 0;
-		if (player_y > 480 - 64) 
-			player_y = 480 - 64;
+		if (player.x < 0) 
+			player.x = 0;
+		if (player.x > 640 - 64)
+			player.x = 640 - 64;
+		if (player.y < 0) 
+			player.y = 0;
+		if (player.y > 480 - 64) 
+			player.y = 480 - 64;
 
-		if (shotFlag && shot_y < -10)
-			shotFlag = 0;
+		if (shot.flag && shot.y < -10)
+			shot.flag = 0;
 
 		//•`‰æ=================================
-		DrawGraph(player_x, player_y, handle_player, FALSE);
-		DrawGraph(enemy_x, enemy_y, handle_enemy, FALSE);
-		if (shotFlag)
-			DrawGraph(shot_x, shot_y, handle_shot, FALSE);
+		DrawGraph(player.x, player.y, player.handle, FALSE);
+		DrawGraph(enemy.x, enemy.y, enemy.handle, FALSE);
+		if (shot.flag)
+			DrawGraph(shot.x, shot.y, shot.handle, FALSE);
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
