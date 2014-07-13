@@ -11,7 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CheckHit.cpp" />
+    <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CharacterStruct.h" />
+    <ClInclude Include="CheckHit.h" />
+    <ClInclude Include="Constant.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DAD5B7A-1DA7-47B9-870C-E02ACE857BB5}</ProjectGuid>
