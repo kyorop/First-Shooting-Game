@@ -5,12 +5,11 @@
 #define ENEMY_SPEED 3
 #define SHOT_SPEED 3
 //個数のマクロ
-#define ENEMY_NUM 50
+#define ENEMY_NUM 25
 //画像サイズのマクロ
 #define PLAYER_SIZE 64
 #define ENEMY_SIZE 64
 #define SHOT_SIZE 16
-
 
 enum Direction
 {
@@ -42,8 +41,9 @@ struct Enemy
 	Shot shot;
 };
 
-bool CheckHitShot(Shot* shot, Enemy* enemy);
-bool CheckHitShot(Shot* shot, Player* player);
+bool CheckHit(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2);
+bool CheckHitShot(const Shot* shot, const Enemy* enemy);
+bool CheckHitShot(const Shot* shot, const Player* player);
 
 // WinMain関数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -154,7 +154,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	
 
-
 		if (player.x < 0) 
 			player.x = 0;
 		if (player.x > 640 - 64)
@@ -170,6 +169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//描画=================================
 		if (player.flag)
 			DrawGraph(player.x, player.y, playerHandle, TRUE);
+
 		for (int i = 0; i < ENEMY_NUM; i++)
 		{
 			if (enemies[i].flag)
@@ -177,6 +177,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (enemies[i].shot.flag)
 				DrawGraph(enemies[i].shot.x, enemies[i].shot.y, shotHandle, TRUE);
 		}
+
 		if (player.shot.flag)
 			DrawGraph(player.shot.x, player.shot.y, shotHandle, TRUE);
 
@@ -191,28 +192,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return 0;
 }
 
-bool CheckHitShot(Shot* shot, Enemy* enemy)
+bool CheckHitShot(const Shot* shot,const Enemy* enemy)
 {
-	if (enemy->y + ENEMY_SIZE > shot->y && enemy->y < shot->y + SHOT_SIZE
-		&& enemy->x < shot->x + SHOT_SIZE && enemy->x + ENEMY_SIZE > shot->x)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return CheckHit(shot->x, shot->y, SHOT_SIZE, SHOT_SIZE, enemy->x, enemy->y, ENEMY_SIZE, ENEMY_SIZE);
 }
 
-bool CheckHitShot(Shot* shot, Player* player)
+bool CheckHitShot(const Shot* shot, const Player* player)
 {
-	if (player->y + ENEMY_SIZE > shot->y && player->y < shot->y + SHOT_SIZE
-		&& player->x < shot->x + SHOT_SIZE && player->x + ENEMY_SIZE > shot->x)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	int h = 15;//補正のh
+	int shotSize = SHOT_SIZE - h;
+	int playerSize = PLAYER_SIZE - h;
+	return CheckHit(shot->x + h, shot->y + h, shotSize, shotSize, player->x + h, player->y + h, playerSize, playerSize);
+}
+
+bool CheckHit(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2)
+{
+	return (x1 < x2 + width2 && x1 + width1 > x2 && y1 + height1 > y2 && y1 < y2 + height2);
 }
