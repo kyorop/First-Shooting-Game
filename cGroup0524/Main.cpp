@@ -1,15 +1,7 @@
 #include "DxLib.h"
-
-//速さマクロ
-#define PLAYER_SPEED 3
-#define ENEMY_SPEED 3
-#define SHOT_SPEED 3
-//個数のマクロ
-#define ENEMY_NUM 25
-//画像サイズのマクロ
-#define PLAYER_SIZE 64
-#define ENEMY_SIZE 64
-#define SHOT_SIZE 16
+#include "CharacterStruct.h"
+#include "CheckHit.h"
+#include "Constant.h"
 
 enum Direction
 {
@@ -17,33 +9,7 @@ enum Direction
 	LEFT,
 };
 
-struct Shot
-{
-	int x;
-	int y;
-	bool flag;
-};
-
-struct Player
-{
-	int x;
-	int y;
-	bool flag;
-	Shot shot;
-};
-
-struct Enemy
-{
-	int x;
-	int y;
-	int muki;
-	bool flag;
-	Shot shot;
-};
-
-bool CheckHit(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2);
-bool CheckHitShot(const Shot* shot, const Enemy* enemy);
-bool CheckHitShot(const Shot* shot, const Player* player);
+const int enemyNum = 50;
 
 // WinMain関数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -59,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const int enemyHandle = LoadGraph("img/Sikaku.png");
 	const int shotHandle = LoadGraph("img/Shot.png");
 
-	Enemy enemies[ENEMY_NUM];
+	Enemy enemies[enemyNum];
 	Player player;
 	//Playerの初期化
 	player.x = 288;
@@ -68,12 +34,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	player.shot.flag = 0;
 	//Enemyの初期化
 	SRand(GetNowCount());
-	for (int i = 0; i < ENEMY_NUM; i++)
+	for (int i = 0; i < enemyNum; i++)
 	{
 		enemies[i].x = GetRand(600);
-		if (i > 4)
+		const int enemyLimit = 1;
+		if (i > enemyLimit)
 		{
-			enemies[i].y = ENEMY_SIZE * GetRand(4);
+			enemies[i].y = ENEMY_SIZE * GetRand(enemyLimit);
 		}
 		else
 			enemies[i].y = ENEMY_SIZE * i;
@@ -106,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (player.shot.flag)
 			player.shot.y -= SHOT_SPEED;
 
-		for (int i = 0; i < ENEMY_NUM; i++)
+		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].flag)
 			{
@@ -130,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		//あたり判定=================================
-		for (int i = 0; i < ENEMY_NUM; i++)
+		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].flag)
 			{
@@ -170,10 +137,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (player.flag)
 			DrawGraph(player.x, player.y, playerHandle, TRUE);
 
-		for (int i = 0; i < ENEMY_NUM; i++)
+		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].flag)
 				DrawGraph(enemies[i].x, enemies[i].y, enemyHandle, TRUE);
+		}
+		for (int i = 0; i < enemyNum; i++)
+		{
 			if (enemies[i].shot.flag)
 				DrawGraph(enemies[i].shot.x, enemies[i].shot.y, shotHandle, TRUE);
 		}
@@ -190,22 +160,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DxLib_End();
 	// ソフトの終了
 	return 0;
-}
-
-bool CheckHitShot(const Shot* shot,const Enemy* enemy)
-{
-	return CheckHit(shot->x, shot->y, SHOT_SIZE, SHOT_SIZE, enemy->x, enemy->y, ENEMY_SIZE, ENEMY_SIZE);
-}
-
-bool CheckHitShot(const Shot* shot, const Player* player)
-{
-	int h = 15;//補正のh
-	int shotSize = SHOT_SIZE - h;
-	int playerSize = PLAYER_SIZE - h;
-	return CheckHit(shot->x + h, shot->y + h, shotSize, shotSize, player->x + h, player->y + h, playerSize, playerSize);
-}
-
-bool CheckHit(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2)
-{
-	return (x1 < x2 + width2 && x1 + width1 > x2 && y1 + height1 > y2 && y1 < y2 + height2);
 }
