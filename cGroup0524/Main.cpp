@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	for (int i = 0; i < enemyNum; i++)
 	{
 		enemies[i].x = GetRand(600);
-		const int enemyLimit = 1;
+		const int enemyLimit = 2;
 		if (i > enemyLimit)
 		{
 			enemies[i].y = ENEMY_SIZE * GetRand(enemyLimit);
