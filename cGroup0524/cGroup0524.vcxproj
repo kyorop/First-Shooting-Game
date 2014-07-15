@@ -11,14 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="CheckHit.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="CharacterStruct.h" />
     <ClInclude Include="CheckHit.h" />
     <ClInclude Include="Constant.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FirstShootingGame.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DAD5B7A-1DA7-47B9-870C-E02ACE857BB5}</ProjectGuid>

@@ -2,6 +2,7 @@
 #include "CharacterStruct.h"
 #include "CheckHit.h"
 #include "Constant.h"
+#include "Boss.h"
 
 enum Direction
 {
@@ -9,7 +10,15 @@ enum Direction
 	LEFT,
 };
 
-const int enemyNum = 50;
+const int enemyNum = 1;
+
+enum ImgId
+{
+	player,
+	enemy,
+	shot,
+	droiDragon,
+};
 
 // WinMain関数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -21,12 +30,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(640, 480, 16);
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	const int playerHandle = LoadGraph("img/Ball.png");
-	const int enemyHandle = LoadGraph("img/Sikaku.png");
-	const int shotHandle = LoadGraph("img/Shot.png");
+	const int imgHandleNum = 4;
+	char *imgPass[] =
+	{
+		"img/Ball.png",
+		"img/Sikaku.png",
+		"img/Shot.png",
+		"img/DroiDragon.png",
+	};
+	int imgHandles[imgHandleNum];
+	int imgSize_w[imgHandleNum];
+	int imgSize_h[imgHandleNum];
+	for (int i = 0; i < imgHandleNum; i++)
+	{
+		imgHandles[i] = LoadGraph(imgPass[i]);
+		GetGraphSize(imgHandles[i], &imgSize_w[i], &imgSize_h[i]);
+	}
 
 	Enemy enemies[enemyNum];
 	Player player;
+	Boss boss;
+
 	//Playerの初期化
 	player.x = 288;
 	player.y = 400;
@@ -48,6 +72,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		enemies[i].shot.flag = 0;
 		enemies[i].flag = true;
 	}
+	//bossの初期化
+	boss.isVisible = 0;
+	boss.life = 3;
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -72,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		if (player.shot.flag)
 			player.shot.y -= SHOT_SPEED;
-
+		//エネミー更新
 		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].flag)
@@ -95,7 +122,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (enemies[i].shot.flag && enemies[i].shot.y > 480)
 				enemies[i].shot.flag = 0;
 		}
-
+		//ボス更新
+		if (! boss.isVisible)
+		{
+			int enemyCount = 0;
+			for (int i = 0; i < enemyNum; i++)
+			{
+				if (!enemies[i].flag)
+					enemyCount++;
+			}
+			if (enemyCount == enemyNum)
+			{
+				boss.isVisible = 1;
+				boss.y = -imgSize_h[ImgId::droiDragon]*2;
+				boss.x = 640 / 2 - imgSize_w[ImgId::droiDragon] / 2;
+			}
+		}
+		else if (boss.y < 10)
+		{
+			boss.y += 1;
+		}
+		else
+		{
+			boss.flag = 1;
+		}
+		
 		//あたり判定=================================
 		for (int i = 0; i < enemyNum; i++)
 		{
@@ -135,21 +186,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		//描画=================================
 		if (player.flag)
-			DrawGraph(player.x, player.y, playerHandle, TRUE);
+			DrawGraph(player.x, player.y, imgHandles[ImgId::player], TRUE);
 
 		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].flag)
-				DrawGraph(enemies[i].x, enemies[i].y, enemyHandle, TRUE);
+				DrawGraph(enemies[i].x, enemies[i].y, imgHandles[ImgId::enemy], TRUE);
 		}
 		for (int i = 0; i < enemyNum; i++)
 		{
 			if (enemies[i].shot.flag)
-				DrawGraph(enemies[i].shot.x, enemies[i].shot.y, shotHandle, TRUE);
+				DrawGraph(enemies[i].shot.x, enemies[i].shot.y, imgHandles[ImgId::shot], TRUE);
 		}
-
 		if (player.shot.flag)
-			DrawGraph(player.shot.x, player.shot.y, shotHandle, TRUE);
+			DrawGraph(player.shot.x, player.shot.y, imgHandles[ImgId::shot], TRUE);
+		if (boss.flag)
+			DrawGraph(boss.x, boss.y, imgHandles[ImgId::droiDragon], TRUE);
 
 		ScreenFlip();
 		if (ProcessMessage() == -1)
