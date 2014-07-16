@@ -25,4 +25,10 @@ struct Enemy
 	Shot shot;
 };
 
+struct ImgSize
+{
+	int w;
+	int h;
+};
+
 #endif // !CHARACTERSTRUCT_H

@@ -21,7 +21,7 @@ bool CheckHitShot(const Shot* shot, const Player* player)
 	return CheckHit(shot->x + h, shot->y + h, shotSize, shotSize, player->x + h, player->y + h, playerSize, playerSize);
 }
 
-bool CheckHitShot(const Shot *shot, const Boss *boss)
+bool CheckHitShot(const Shot *shot, ImgSize *shotSize, const Boss *boss, ImgSize *bossSize)
 {
-	return 1;
+	return CheckHit(shot->x, shot->y, shotSize->w, shotSize->h, boss->x, boss->y, bossSize->w, bossSize->h);
 }

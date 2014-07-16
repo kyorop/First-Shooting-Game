@@ -38,13 +38,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		"img/Shot.png",
 		"img/DroiDragon.png",
 	};
+	ImgSize imgSizes[imgHandleNum];
 	int imgHandles[imgHandleNum];
-	int imgSize_w[imgHandleNum];
-	int imgSize_h[imgHandleNum];
 	for (int i = 0; i < imgHandleNum; i++)
 	{
 		imgHandles[i] = LoadGraph(imgPass[i]);
-		GetGraphSize(imgHandles[i], &imgSize_w[i], &imgSize_h[i]);
+		GetGraphSize(imgHandles[i], &imgSizes[i].w, &imgSizes[i].h);
 	}
 
 	Enemy enemies[enemyNum];
@@ -74,6 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 	//boss‚Ì‰Šú‰»
 	boss.isVisible = 0;
+	boss.flag = 0;
 	boss.life = 3;
 	
 	while (CheckHitKey(KEY_INPUT_ESCAPE) == 0)
@@ -134,18 +134,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (enemyCount == enemyNum)
 			{
 				boss.isVisible = 1;
-				boss.y = -imgSize_h[ImgId::droiDragon]*2;
-				boss.x = 640 / 2 - imgSize_w[ImgId::droiDragon] / 2;
+				boss.y = -imgSizes[ImgId::droiDragon].h*2;
+				boss.x = 640 / 2 - imgSizes[ImgId::droiDragon].w / 2;
 			}
 		}
 		else if (boss.y < 10)
 		{
 			boss.y += 1;
-		}
-		else
-		{
 			boss.flag = 1;
 		}
+
+		if (boss.flag && boss.life <= 0)
+			boss.flag = 0;
 		
 		//‚ ‚½‚è”»’è=================================
 		for (int i = 0; i < enemyNum; i++)
@@ -170,8 +170,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (CheckHitShot(&enemies[i].shot, &player))
 				player.flag = 0;
 		}
+		if (boss.flag && player.shot.flag)
+		{
+			if (CheckHitShot(&player.shot, &imgSizes[ImgId::shot], &boss, &imgSizes[ImgId::droiDragon]) && boss.flag)
+			{
+				boss.life--;
+				player.shot.flag = 0;
+			}
+		}
 	
-
 		if (player.x < 0) 
 			player.x = 0;
 		if (player.x > 640 - 64)
