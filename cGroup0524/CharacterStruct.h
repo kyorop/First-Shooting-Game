@@ -1,34 +1,35 @@
 #ifndef CHARACTERSTRUCT_H
 #define CHARACTERSTRUCT_H
+#include <stdbool.h>
 
-struct Shot
+typedef struct 
 {
 	int x;
 	int y;
-	bool flag;
-};
+	char flag;
+}Shot;
 
-struct Player
+typedef struct
 {
 	int x;
 	int y;
 	bool flag;
 	Shot shot;
-};
+}Player;
 
-struct Enemy
+typedef struct
 {
 	int x;
 	int y;
 	int muki;
 	bool flag;
 	Shot shot;
-};
+}Enemy;
 
-struct ImgSize
+typedef struct
 {
 	int w;
 	int h;
-};
+}ImgSize;
 
 #endif // !CHARACTERSTRUCT_H

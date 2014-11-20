@@ -1,14 +1,14 @@
 #ifndef BOSS_H
 #define BOSS_H
 
-struct Boss
+typedef struct
 {
 	int x;
 	int y;
 	int flag;
 	int life;
 	int isVisible;
-};
+}Boss;
 
 void BossUpdate(Boss *boss);
 
